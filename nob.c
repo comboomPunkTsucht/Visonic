@@ -28,6 +28,7 @@ bool build_raylib(Cmd *cmd) {
                "PLATFORM=PLATFORM_DESKTOP",
                temp_sprintf("RAYLIB_MODULE_RAYGUI_PATH=%s/lib/raygui/src", EXTERNAL_DIR),
                "GLFW_LINUX_ENABLE_WAYLAND=TRUE",
+               "USE_EXTERNAL_GLFW=TRUE",
                "RAYLIB_MODULE_RAYGUI=TRUE",
                "-C", temp_sprintf("%s/lib/raylib/src", EXTERNAL_DIR));
     return cmd_run_sync_and_reset(cmd);
@@ -36,14 +37,16 @@ bool build_raylib(Cmd *cmd) {
 bool build_Visonic(Cmd *cmd) {
     // Build Visonic
     cmd_append(cmd,
-               "c++",
-               "-o", temp_sprintf("%s/visonic", BUILD_DIR),
-               "-Wall", "-Wextra",
-               temp_sprintf("%s/main.cpp", SRC_DIR),
-               "-static",
+               "g++",
+               "-o",
+               temp_sprintf("%s/visonic", BUILD_DIR),
+               "-Wall", "-Wextra", "-Wwritable-strings", temp_sprintf("%s/main.cpp", SRC_DIR),
                temp_sprintf("-I%s/lib/raylib/src", EXTERNAL_DIR),
                temp_sprintf("-L%s/raylib", BUILD_DIR),
-               "-lraylib", "-lm", "-ldl", "-lpthread", "-lGL", "-lrt");
+               "-lraylib", "-lm", "-ldl", "-lpthread");
+#ifdef __APPLE__
+      cmd_append(cmd, "-framework", "Cocoa", "-framework", "IOKit", "-framework", "CoreFoundation", "-framework", "CoreGraphics");
+    #endif
     return cmd_run_sync_and_reset(cmd);
 }
 
@@ -52,7 +55,7 @@ int main(int argc, char **argv) {
     Cmd cmd = {0};
     if (!init_env()) return 1;
     if (!build_raylib(&cmd)) return 1;
-    //if (!build_Visonic(&cmd)) return 1;
+    if (!build_Visonic(&cmd)) return 1;
 
   return 0;
 }
