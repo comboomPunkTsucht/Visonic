@@ -6,6 +6,7 @@ extern "C" {
 #  include "../external/header/nob.h/nob.h"
 #  include "./header/nord.h"
 } // extern "C"
+#include "../external/lib/imgui/imgui.h"
 
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
