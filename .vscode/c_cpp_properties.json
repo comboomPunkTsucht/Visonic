@@ -4,13 +4,16 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/external/lib/imgui",
-                "${workspaceFolder}/external/lib/imgui/backends"
+                "${workspaceFolder}/external/lib/imgui/**",
+                "${workspaceFolder}/external/lib/imgui/backends/**",
+                "/opt/homebrew/lib/**",
+                "/opt/homebrew/include/**",
+                "/usr/local/lib/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
-            "cStandard": "c17",
-            "cppStandard": "c++14",
+            "cStandard": "c89",
+            "cppStandard": "gnu++98",
             "intelliSenseMode": "macos-clang-arm64",
             "configurationProvider": "ms-vscode.makefile-tools"
         }

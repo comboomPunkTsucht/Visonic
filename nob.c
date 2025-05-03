@@ -42,17 +42,20 @@ bool build_Visonic(Cmd *cmd) {
                "-Wmissing-field-initializers");
 #ifdef __APPLE__
     cmd_append(cmd,
-      //CXXFLAGS
-            "-framework", "Cocoa",
-            "-framework", "QuartzCore",
-            "-framework", "Metal",
-            "-framework", "MetalKit",
+               // CXXFLAGS
+               "-framework", "Metal",
+               "-framework", "MetalKit",
+               "-framework", "Cocoa",
+               "-framework", "IOKit",
+               "-framework", "CoreVideo",
+               "-framework", "QuartzCore",
 
-          //LDFLAGS
-            "-L","/usr/local/lib",
-            "-I","/usr/local/include",
-            "-L","/opt/homebrew/lib",
-            "-I","/opt/homebrew/include");
+               // LDFLAGS
+               "-L", "/usr/local/lib",
+               "-I", "/usr/local/include",
+               "-L", "/opt/homebrew/lib",
+               "-I", "/opt/homebrew/include",
+               "-lglfw");
 #endif
 #ifdef __linux__
     cmd_append(cmd,
@@ -106,7 +109,7 @@ bool build_Visonic(Cmd *cmd) {
             "-I/C/Program Files/include");
 #endif
 
-    cmd_append(cmd, temp_sprintf("%s/main.cpp", SRC_DIR));
+    cmd_append(cmd, temp_sprintf("%s/main.mm", SRC_DIR), temp_sprintf("%s/lib/imgui/imgui.cpp", EXTERNAL_DIR), temp_sprintf("%s/lib/imgui/imgui_draw.cpp", EXTERNAL_DIR), temp_sprintf("%s/lib/imgui/imgui_widgets.cpp", EXTERNAL_DIR), temp_sprintf("%s/lib/imgui/imgui_tables.cpp", EXTERNAL_DIR), temp_sprintf("%s/lib/imgui/imgui_demo.cpp", EXTERNAL_DIR), temp_sprintf("%s/lib/imgui/backends/imgui_impl_glfw.cpp", EXTERNAL_DIR), temp_sprintf("%s/lib/imgui/backends/imgui_impl_metal.mm", EXTERNAL_DIR));
     return cmd_run_sync_and_reset(cmd);
 }
 
