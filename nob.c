@@ -33,8 +33,8 @@ bool build_Visonic(Cmd *cmd) {
                "-o", temp_sprintf("%s/visonic", BUILD_DIR),
 
                // LDFLAGS
-               temp_sprintf("-I%s/imgui", EXTERNAL_DIR),
-               temp_sprintf("-I%s/imgui/backends", EXTERNAL_DIR),
+               "-I", temp_sprintf("%s/lib/imgui", EXTERNAL_DIR),
+               "-I", temp_sprintf("%s/lib/imgui/backends", EXTERNAL_DIR),
 
                // CXXFLAGS
                "-Wall",
@@ -46,13 +46,13 @@ bool build_Visonic(Cmd *cmd) {
             "-framework", "Cocoa",
             "-framework", "QuartzCore",
             "-framework", "Metal",
-            "-framework", "MetalKit"
+            "-framework", "MetalKit",
 
           //LDFLAGS
-            "-L/usr/local/lib",
-            "-I/usr/local/include",
-            "-L/opt/homebrew/lib",
-            "-I/opt/homebrew/include");
+            "-L","/usr/local/lib",
+            "-I","/usr/local/include",
+            "-L","/opt/homebrew/lib",
+            "-I","/opt/homebrew/include");
 #endif
 #ifdef __linux__
     cmd_append(cmd,

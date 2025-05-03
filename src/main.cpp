@@ -8,7 +8,7 @@ extern "C" {
 } // extern "C"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
-#include "imgui_impl_vulkan.h"
+//#include "imgui_impl_vulkan.h"
 #include "imgui_impl_metal.h"
 
 #define WINDOW_WIDTH 1920
