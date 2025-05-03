@@ -25,8 +25,8 @@ bool build_Visonic(Cmd *cmd) {
     cmd_append(cmd,
                "g++",
                "-o", temp_sprintf("%s/visonic", BUILD_DIR),
-               "-Wall", "-Wextra", "-Wwritable-strings",
-               temp_sprintf("%s/main.cpp", SRC_DIR));
+               "-Wall", "-Wextra", "-Wmissing-field-initializers",
+              temp_sprintf("%s/main.cpp", SRC_DIR));
     return cmd_run_sync_and_reset(cmd);
 }
 
