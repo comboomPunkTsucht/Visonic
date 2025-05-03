@@ -1,9 +1,7 @@
 [submodule "external/header/nob.h"]
 	path = external/header/nob.h
 	url = https://github.com/tsoding/nob.h
-[submodule "external/lib/raylib"]
-	path = external/lib/raylib
-	url = https://github.com/raysan5/raylib
-[submodule "external/lib/raygui"]
-	path = external/lib/raygui
-	url = https://github.com/raysan5/raygui
+[submodule "external/lib/imgui"]
+	path = external/lib/imgui
+	url = https://github.com/ocornut/imgui
+	branch = docking
