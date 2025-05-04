@@ -18,8 +18,15 @@ static char *BUILD_DIR = NULL;
 static char *SRC_DIR = NULL;
 static char *EXTERNAL_DIR = NULL;
 
-bool init_env()
-{
+void cmd_append_flags(Cmd *cmd, const char *flags) {
+  char *copy = temp_strdup(flags);
+  char *token = strtok(copy, " ");
+  while (token != NULL) {
+    cmd_append(cmd, token);
+    token = strtok(NULL, " ");
+  }
+}
+bool init_env() {
   BUILD_DIR = temp_sprintf("%s/build", get_current_dir_temp());
   SRC_DIR = temp_sprintf("%s/src", get_current_dir_temp());
   EXTERNAL_DIR = temp_sprintf("%s/external", get_current_dir_temp());
@@ -27,69 +34,54 @@ bool init_env()
 }
 
 bool build_Visonic(Cmd *cmd) {
-    // Build Visonic
-    cmd_append(cmd,
-               "gcc",
-               "-o", temp_sprintf("%s/visonic", BUILD_DIR),
+  Cmd cmd_cflags_gtk4 = {0};
+  Cmd cmd_ldflags_gtk4 = {0};
+  Fd fdout_cflags = nob_fd_open_for_write(temp_sprintf("%s/cflags_gtk4_output.txt", BUILD_DIR));
+  Fd fdout_ldflags = nob_fd_open_for_write(temp_sprintf("%s/ldflags_gtk4_output.txt", BUILD_DIR));
+  Fd fderr_cflags = nob_fd_open_for_write(temp_sprintf("%s/cflags_gtk4_error.txt", BUILD_DIR));
+  Fd fderr_ldflags = nob_fd_open_for_write(temp_sprintf("%s/ldflags_gtk4_error.txt", BUILD_DIR));
 
-               // CFLAGS
-               "-Wall",
-               "-Wextra",
-               "-I", "/opt/homebrew/Cellar/gtk4/4.18.5/include/gtk-4.0",
-               "-I", "/opt/homebrew/Cellar/pango/1.56.3/include/pango-1.0",
-               "-I", "/opt/homebrew/Cellar/fribidi/1.0.16/include/fribidi",
-               "-I", "/opt/homebrew/Cellar/harfbuzz/11.2.0/include/harfbuzz",
-               "-I", "/opt/homebrew/Cellar/graphite2/1.3.14/include",
-               "-I", "/opt/homebrew/include/gdk-pixbuf-2.0",
-               "-I", "/opt/homebrew/opt/libtiff/include",
-               "-I", "/opt/homebrew/opt/zstd/include",
-               "-I", "/opt/homebrew/Cellar/xz/5.8.1/include",
-               "-I", "/opt/homebrew/opt/jpeg-turbo/include",
-               "-I", "/opt/homebrew/Cellar/cairo/1.18.4/include/cairo",
-               "-I", "/opt/homebrew/Cellar/fontconfig/2.16.0/include",
-               "-I", "/opt/homebrew/opt/freetype/include/freetype2",
-               "-I", "/opt/homebrew/opt/libpng/include/libpng16",
-               "-I", "/opt/homebrew/Cellar/libxext/1.3.6/include",
-               "-I", "/opt/homebrew/Cellar/xorgproto/2024.1/include",
-               "-I", "/opt/homebrew/Cellar/libxrender/0.9.12/include",
-               "-I", "/opt/homebrew/Cellar/libx11/1.8.12/include",
-               "-I", "/opt/homebrew/Cellar/libxcb/1.17.0/include",
-               "-I", "/opt/homebrew/Cellar/libxau/1.0.12/include",
-               "-I", "/opt/homebrew/Cellar/libxdmcp/1.1.5/include",
-               "-I", "/opt/homebrew/Cellar/pixman/0.46.0/include/pixman-1",
-               "-I", "/opt/homebrew/Cellar/graphene/1.10.8/include/graphene-1.0",
-               "-I", "/opt/homebrew/Cellar/graphene/1.10.8/lib/graphene-1.0/include",
-               "-I", "/opt/homebrew/Cellar/glib/2.84.1/include",
-               "-I", "/Library/Developer/CommandLineTools/SDKs/MacOSX15.sdk/usr/include/ffi",
-               "-I", "/opt/homebrew/Cellar/glib/2.84.1/include/glib-2.0",
-               "-I", "/opt/homebrew/Cellar/glib/2.84.1/lib/glib-2.0/include",
-               "-I", "/opt/homebrew/opt/gettext/include",
-               "-I", "/opt/homebrew/Cellar/pcre2/10.45/include",
+  cmd_append(&cmd_cflags_gtk4,
+             "pkg-config",
+             "--cflags", "gtk4");
+  cmd_append(&cmd_ldflags_gtk4,
+             "pkg-config",
+             "--libs", "gtk4");
 
-               // LDFLAGS
-               "-L", "/opt/homebrew/Cellar/gtk4/4.18.5/lib",
-               "-lgtk-4",
-               "-L","/opt/homebrew/Cellar/pango/1.56.3/lib",
-               "-lpangocairo-1.0",
-               "-lpango-1.0",
-               "-L","/opt/homebrew/Cellar/harfbuzz/11.2.0/lib",
-               "-lharfbuzz",
-               "-L","/opt/homebrew/lib",
-               "-lgdk_pixbuf-2.0",
-               "-L","/opt/homebrew/Cellar/cairo/1.18.4/lib",
-               "-lcairo-gobject",
-               "-lcairo",
-               "-L","/opt/homebrew/Cellar/graphene/1.10.8/lib",
-               "-lgraphene-1.0",
-               "-L","/opt/homebrew/Cellar/glib/2.84.1/lib",
-               "-lgio-2.0",
-               "-lgobject-2.0",
-               "-lglib-2.0",
-               "-L","/opt/homebrew/opt/gettext/lib",
-               "-lintl",
+  cmd_run_sync_redirect_and_reset(&cmd_cflags_gtk4, (Cmd_Redirect){
+                                                        .fdin = NULL,
+                                                        .fdout = &fdout_cflags,
+                                                        .fderr = &fderr_cflags,
+                                                    });
+  cmd_run_sync_redirect_and_reset(&cmd_ldflags_gtk4, (Cmd_Redirect){
+                                                         .fdin = NULL,
+                                                         .fdout = &fdout_ldflags,
+                                                         .fderr = &fderr_ldflags,
+                                                     });
 
-               temp_sprintf("%s/main.c", SRC_DIR));
-    return cmd_run_sync_and_reset(cmd);
+  String_Builder cflags_gtk4_sb = {0};
+  nob_read_entire_file(temp_sprintf("%s/cflags_gtk4_output.txt", BUILD_DIR), &cflags_gtk4_sb);
+  String_View cflags_gtk4 = sv_trim(sb_to_sv(cflags_gtk4_sb));
+  nob_log(NOB_INFO, "CFLAGS-GTK4: %s", cflags_gtk4.data);
+  String_Builder ldflags_gtk4_sb = {0};
+  nob_read_entire_file(temp_sprintf("%s/ldflags_gtk4_output.txt", BUILD_DIR), &ldflags_gtk4_sb);
+  String_View ldflags_gtk4 = sv_trim(sb_to_sv(ldflags_gtk4_sb));
+  nob_log(NOB_INFO, "LDFLAGS-GTK4: %s", ldflags_gtk4.data);
+
+  // Build Visonic
+  cmd_append(cmd,
+             "gcc",
+             "-o", temp_sprintf("%s/visonic", BUILD_DIR),
+
+  // CFLAGS
+             "-Wall",
+             "-Wextra");
+  cmd_append_flags(cmd, cflags_gtk4.data);
+  // LDFLAGS
+  cmd_append_flags(cmd, ldflags_gtk4.data);
+  cmd_append(cmd, temp_sprintf("%s/main.c", SRC_DIR));
+
+  return cmd_run_sync_and_reset(cmd);
 }
 
 int main(int argc, char *argv[]) {
