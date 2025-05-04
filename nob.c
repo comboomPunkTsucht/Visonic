@@ -18,7 +18,7 @@ static char *BUILD_DIR = NULL;
 static char *SRC_DIR = NULL;
 static char *EXTERNAL_DIR = NULL;
 
-void cmd_append_flags(Cmd *cmd, const char *flags) {
+void cmd_append_flags(Nob_Cmd *cmd, const char *flags) {
   char *copy = temp_strdup(flags);
   char *token = strtok(copy, " ");
   while (token != NULL) {
@@ -27,19 +27,19 @@ void cmd_append_flags(Cmd *cmd, const char *flags) {
   }
 }
 bool init_env() {
-  BUILD_DIR = nob_path_name(temp_sprintf("%s/build", get_current_dir_temp()));
-  SRC_DIR = nob_path_name(temp_sprintf("%s/src", get_current_dir_temp()));
-  EXTERNAL_DIR = nob_path_name(temp_sprintf("%s/external", get_current_dir_temp()));
+  BUILD_DIR = path_name(temp_sprintf("%s/build", get_current_dir_temp()));
+  SRC_DIR = path_name(temp_sprintf("%s/src", get_current_dir_temp()));
+  EXTERNAL_DIR = path_name(temp_sprintf("%s/external", get_current_dir_temp()));
   return mkdir_if_not_exists(BUILD_DIR);
 }
 
 bool build_Visonic(Cmd *cmd) {
   Cmd cmd_cflags_gtk4 = {0};
   Cmd cmd_ldflags_gtk4 = {0};
-  Fd fdout_cflags = nob_fd_open_for_write(nob_path_name(temp_sprintf("%s/cflags_gtk4_output.txt", BUILD_DIR)));
-  Fd fdout_ldflags = nob_fd_open_for_write(nob_path_name(temp_sprintf("%s/ldflags_gtk4_output.txt", BUILD_DIR)));
-  Fd fderr_cflags = nob_fd_open_for_write(nob_path_name(temp_sprintf("%s/cflags_gtk4_error.txt", BUILD_DIR)));
-  Fd fderr_ldflags = nob_fd_open_for_write(nob_path_name(temp_sprintf("%s/ldflags_gtk4_error.txt", BUILD_DIR)));
+  Fd fdout_cflags = fd_open_for_write(path_name(temp_sprintf("%s/cflags_gtk4_output.txt", BUILD_DIR)));
+  Fd fdout_ldflags = fd_open_for_write(path_name(temp_sprintf("%s/ldflags_gtk4_output.txt", BUILD_DIR)));
+  Fd fderr_cflags = fd_open_for_write(path_name(temp_sprintf("%s/cflags_gtk4_error.txt", BUILD_DIR)));
+  Fd fderr_ldflags = fd_open_for_write(path_name(temp_sprintf("%s/ldflags_gtk4_error.txt", BUILD_DIR)));
 
   cmd_append(&cmd_cflags_gtk4,
              "pkg-config",
@@ -60,18 +60,18 @@ bool build_Visonic(Cmd *cmd) {
                                                      });
 
   String_Builder cflags_gtk4_sb = {0};
-  nob_read_entire_file(nob_path_name(temp_sprintf("%s/cflags_gtk4_output.txt", BUILD_DIR)), &cflags_gtk4_sb);
+  read_entire_file(path_name(temp_sprintf("%s/cflags_gtk4_output.txt", BUILD_DIR)), &cflags_gtk4_sb);
   String_View cflags_gtk4 = sv_trim(sb_to_sv(cflags_gtk4_sb));
-  nob_log(NOB_INFO, "CFLAGS-GTK4: %s", cflags_gtk4.data);
+  log(INFO, "CFLAGS-GTK4: %s", cflags_gtk4.data);
   String_Builder ldflags_gtk4_sb = {0};
-  nob_read_entire_file(nob_path_name(temp_sprintf("%s/ldflags_gtk4_output.txt", BUILD_DIR)), &ldflags_gtk4_sb);
+  read_entire_file(path_name(temp_sprintf("%s/ldflags_gtk4_output.txt", BUILD_DIR)), &ldflags_gtk4_sb);
   String_View ldflags_gtk4 = sv_trim(sb_to_sv(ldflags_gtk4_sb));
-  nob_log(NOB_INFO, "LDFLAGS-GTK4: %s", ldflags_gtk4.data);
+  log(INFO, "LDFLAGS-GTK4: %s", ldflags_gtk4.data);
 
   // Build Visonic
   cmd_append(cmd,
              "gcc",
-             "-o", nob_path_name(temp_sprintf("%s/visonic", BUILD_DIR)),
+             "-o", path_name(temp_sprintf("%s/visonic", BUILD_DIR)),
 
              // CFLAGS
              "-Wall",
