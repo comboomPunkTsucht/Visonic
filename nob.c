@@ -61,13 +61,13 @@ bool build_Visonic(Cmd *cmd) {
 
   String_Builder cflags_gtk4_sb = {0};
   read_entire_file(temp_sprintf("%s/cflags_gtk4_output.txt", BUILD_DIR), &cflags_gtk4_sb);
-  String_View cflags_gtk4_trimmed = sv_trim(sb_to_sv(cflags_gtk4_sb));
-  String_View cflags_gtk4 = nob_sv_chop_by_delim(&cflags_gtk4_trimmed, '\n');
+  String_View cflags_gtk4_raw = sb_to_sv(cflags_gtk4_sb);
+  String_View cflags_gtk4 = sv_chop_by_delim(&cflags_gtk4_raw, '\n');
   nob_log(INFO, "CFLAGS-GTK4: %s", cflags_gtk4.data);
   String_Builder ldflags_gtk4_sb = {0};
   read_entire_file(temp_sprintf("%s/ldflags_gtk4_output.txt", BUILD_DIR), &ldflags_gtk4_sb);
-  String_View ldflags_gtk4_trimmed = sv_trim(sb_to_sv(ldflags_gtk4_sb));
-  String_View ldflags_gtk4 = nob_sv_chop_by_delim(&ldflags_gtk4_trimmed, '\n');
+  String_View ldflags_gtk4_raw = sb_to_sv(ldflags_gtk4_sb);
+  String_View ldflags_gtk4 = sv_chop_by_delim(&ldflags_gtk4_raw, '\n');
   nob_log(INFO, "LDFLAGS-GTK4: %s", ldflags_gtk4.data);
 
   // Build Visonic
