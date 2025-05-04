@@ -29,87 +29,66 @@ bool init_env()
 bool build_Visonic(Cmd *cmd) {
     // Build Visonic
     cmd_append(cmd,
-               "g++",
+               "gcc",
                "-o", temp_sprintf("%s/visonic", BUILD_DIR),
 
-               // LDFLAGS
-               "-I", temp_sprintf("%s/lib/imgui", EXTERNAL_DIR),
-               "-I", temp_sprintf("%s/lib/imgui/backends", EXTERNAL_DIR),
-
-               // CXXFLAGS
+               // CFLAGS
                "-Wall",
                "-Wextra",
-               "-Wmissing-field-initializers");
-#ifdef __APPLE__
-    cmd_append(cmd,
-               // CXXFLAGS
-               "-framework", "Metal",
-               "-framework", "MetalKit",
-               "-framework", "Cocoa",
-               "-framework", "IOKit",
-               "-framework", "CoreVideo",
-               "-framework", "QuartzCore",
+               "-I", "/opt/homebrew/Cellar/gtk4/4.18.5/include/gtk-4.0",
+               "-I", "/opt/homebrew/Cellar/pango/1.56.3/include/pango-1.0",
+               "-I", "/opt/homebrew/Cellar/fribidi/1.0.16/include/fribidi",
+               "-I", "/opt/homebrew/Cellar/harfbuzz/11.2.0/include/harfbuzz",
+               "-I", "/opt/homebrew/Cellar/graphite2/1.3.14/include",
+               "-I", "/opt/homebrew/include/gdk-pixbuf-2.0",
+               "-I", "/opt/homebrew/opt/libtiff/include",
+               "-I", "/opt/homebrew/opt/zstd/include",
+               "-I", "/opt/homebrew/Cellar/xz/5.8.1/include",
+               "-I", "/opt/homebrew/opt/jpeg-turbo/include",
+               "-I", "/opt/homebrew/Cellar/cairo/1.18.4/include/cairo",
+               "-I", "/opt/homebrew/Cellar/fontconfig/2.16.0/include",
+               "-I", "/opt/homebrew/opt/freetype/include/freetype2",
+               "-I", "/opt/homebrew/opt/libpng/include/libpng16",
+               "-I", "/opt/homebrew/Cellar/libxext/1.3.6/include",
+               "-I", "/opt/homebrew/Cellar/xorgproto/2024.1/include",
+               "-I", "/opt/homebrew/Cellar/libxrender/0.9.12/include",
+               "-I", "/opt/homebrew/Cellar/libx11/1.8.12/include",
+               "-I", "/opt/homebrew/Cellar/libxcb/1.17.0/include",
+               "-I", "/opt/homebrew/Cellar/libxau/1.0.12/include",
+               "-I", "/opt/homebrew/Cellar/libxdmcp/1.1.5/include",
+               "-I", "/opt/homebrew/Cellar/pixman/0.46.0/include/pixman-1",
+               "-I", "/opt/homebrew/Cellar/graphene/1.10.8/include/graphene-1.0",
+               "-I", "/opt/homebrew/Cellar/graphene/1.10.8/lib/graphene-1.0/include",
+               "-I", "/opt/homebrew/Cellar/glib/2.84.1/include",
+               "-I", "/Library/Developer/CommandLineTools/SDKs/MacOSX15.sdk/usr/include/ffi",
+               "-I", "/opt/homebrew/Cellar/glib/2.84.1/include/glib-2.0",
+               "-I", "/opt/homebrew/Cellar/glib/2.84.1/lib/glib-2.0/include",
+               "-I", "/opt/homebrew/opt/gettext/include",
+               "-I", "/opt/homebrew/Cellar/pcre2/10.45/include",
 
                // LDFLAGS
-               "-L", "/usr/local/lib",
-               "-I", "/usr/local/include",
-               "-L", "/opt/homebrew/lib",
-               "-I", "/opt/homebrew/include",
-               "-lglfw");
-#endif
-#ifdef __linux__
-    cmd_append(cmd,
-      //CXXFLAGS
-            "-lX11",
-            "-lXext",
-            "-lXrender",
-            "-lXrandr",
-            "-lXi",
+               "-L", "/opt/homebrew/Cellar/gtk4/4.18.5/lib",
+               "-lgtk-4",
+               "-L","/opt/homebrew/Cellar/pango/1.56.3/lib",
+               "-lpangocairo-1.0",
+               "-lpango-1.0",
+               "-L","/opt/homebrew/Cellar/harfbuzz/11.2.0/lib",
+               "-lharfbuzz",
+               "-L","/opt/homebrew/lib",
+               "-lgdk_pixbuf-2.0",
+               "-L","/opt/homebrew/Cellar/cairo/1.18.4/lib",
+               "-lcairo-gobject",
+               "-lcairo",
+               "-L","/opt/homebrew/Cellar/graphene/1.10.8/lib",
+               "-lgraphene-1.0",
+               "-L","/opt/homebrew/Cellar/glib/2.84.1/lib",
+               "-lgio-2.0",
+               "-lgobject-2.0",
+               "-lglib-2.0",
+               "-L","/opt/homebrew/opt/gettext/lib",
+               "-lintl",
 
-          //LDFLAGS
-            "-L/usr/lib",
-            "-I/usr/include");
-#endif
-#ifdef __FreeBSD__
-    cmd_append(cmd,
-      //CXXFLAGS
-            "-lX11",
-            "-lXext",
-            "-lXrender",
-            "-lXrandr",
-            "-lXi",
-
-          //LDFLAGS
-            "-L/usr/lib",
-            "-I/usr/include");
-#endif
-#ifdef __OpenBSD__
-    cmd_append(cmd,
-      //CXXFLAGS
-            "-lX11",
-            "-lXext",
-            "-lXrender",
-            "-lXrandr",
-            "-lXi",
-
-          //LDFLAGS
-            "-L/usr/lib",
-            "-I/usr/include");
-#endif
-#ifdef _WIN32
-    cmd_append(cmd,
-      //CXXFLAGS
-            "-luser32",
-            "-lgdi32",
-            "-lcomdlg32",
-            "-lcomctl32",
-
-          //LDFLAGS
-            "-L/C/Program Files/lib",
-            "-I/C/Program Files/include");
-#endif
-
-    cmd_append(cmd, temp_sprintf("%s/main.mm", SRC_DIR), temp_sprintf("%s/lib/imgui/imgui.cpp", EXTERNAL_DIR), temp_sprintf("%s/lib/imgui/imgui_draw.cpp", EXTERNAL_DIR), temp_sprintf("%s/lib/imgui/imgui_widgets.cpp", EXTERNAL_DIR), temp_sprintf("%s/lib/imgui/imgui_tables.cpp", EXTERNAL_DIR), temp_sprintf("%s/lib/imgui/imgui_demo.cpp", EXTERNAL_DIR), temp_sprintf("%s/lib/imgui/backends/imgui_impl_glfw.cpp", EXTERNAL_DIR), temp_sprintf("%s/lib/imgui/backends/imgui_impl_metal.mm", EXTERNAL_DIR));
+               temp_sprintf("%s/main.c", SRC_DIR));
     return cmd_run_sync_and_reset(cmd);
 }
 

@@ -1,7 +1,3 @@
 [submodule "external/header/nob.h"]
 	path = external/header/nob.h
 	url = https://github.com/tsoding/nob.h
-[submodule "external/lib/imgui"]
-	path = external/lib/imgui
-	url = https://github.com/ocornut/imgui
-	branch = docking
