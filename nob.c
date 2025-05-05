@@ -7,6 +7,7 @@
 #define NOB_IMPLEMENTATION
 #define NOB_STRIP_PREFIX
 #include "./external/header/nob.h/nob.h"
+#include <string.h>
 
 typedef struct {
   const char** items;
@@ -26,6 +27,13 @@ void cmd_append_flags(Nob_Cmd *cmd, const char *flags) {
     token = strtok(NULL, " ");
   }
 }
+void trim_trailing_newlines(char *buffer)
+{
+  buffer[strcspn(buffer, "\r\n")] = '\0';
+  buffer[strcspn(buffer, "\n")] = '\0';
+  buffer[strcspn(buffer, "\r\n")] = '\0';
+}
+
 bool init_env() {
   BUILD_DIR = temp_sprintf("%s/build", get_current_dir_temp());
   SRC_DIR = temp_sprintf("%s/src", get_current_dir_temp());
@@ -63,11 +71,13 @@ bool build_Visonic(Cmd *cmd) {
   read_entire_file(temp_sprintf("%s/cflags_gtk4_output.txt", BUILD_DIR), &cflags_gtk4_sb);
   String_View cflags_gtk4_raw = sb_to_sv(cflags_gtk4_sb);
   String_View cflags_gtk4 = sv_chop_by_delim(&cflags_gtk4_raw, '\n');
-  nob_log(INFO, "CFLAGS-GTK4: %s", cflags_gtk4.data);
+  trim_trailing_newlines(cflags_gtk4.data);
+  nob_log(INFO, "CFLAGS-GTK4: %s\n", cflags_gtk4.data);
   String_Builder ldflags_gtk4_sb = {0};
   read_entire_file(temp_sprintf("%s/ldflags_gtk4_output.txt", BUILD_DIR), &ldflags_gtk4_sb);
   String_View ldflags_gtk4_raw = sb_to_sv(ldflags_gtk4_sb);
   String_View ldflags_gtk4 = sv_chop_by_delim(&ldflags_gtk4_raw, '\n');
+  trim_trailing_newlines(ldflags_gtk4.data);
   nob_log(INFO, "LDFLAGS-GTK4: %s", ldflags_gtk4.data);
 
   // Build Visonic
