@@ -4,5 +4,9 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"licenser.author": "mcpeaps_HD",
+		"licenser.license": "MIT",
+		"licenser.projectName": "Visonic"
+	}
 }
