@@ -78,7 +78,7 @@ bool build_Visonic(Cmd *cmd) {
   String_View ldflags_gtk4_raw = sb_to_sv(ldflags_gtk4_sb);
   String_View ldflags_gtk4 = sv_chop_by_delim(&ldflags_gtk4_raw, '\n');
   trim_trailing_newlines(ldflags_gtk4.data);
-  nob_log(INFO, "LDFLAGS-GTK4: %s", ldflags_gtk4.data);
+  nob_log(INFO, "LDFLAGS-GTK4: %s\n", ldflags_gtk4.data);
 
   // Build Visonic
   cmd_append(cmd,
